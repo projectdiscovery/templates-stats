@@ -1,4 +1,4 @@
-module projectdiscovery/templates-stats
+module github.com/projectdiscovery/templates-stats
 
 go 1.16
 
