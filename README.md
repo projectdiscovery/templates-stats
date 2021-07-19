@@ -9,7 +9,7 @@ A utility for extracting various meta data from nuclei-templates.
 templates-stats -output TEMPLATES-STATS.md
 ```
 
-### Pulls Template stats in JSON format (default)
+### Pulls Template stats in JSON format
 
 ```sh
 templates-stats -json -output TEMPLATES-STATS.json
