@@ -157,7 +157,6 @@ func printTemplateStats() {
 			if *verbose {
 				log.Printf("[lint] No tags found for template %s\n", template)
 			}
-			continue
 		}
 		description := infoMap["description"]
 		if description == nil {
@@ -186,7 +185,6 @@ func printTemplateStats() {
 		author, ok := infoMap["author"]
 		if !ok {
 			log.Printf("[lint] no author found for template %s\n", template)
-			continue
 		}
 		authorStr := types.ToString(author)
 
