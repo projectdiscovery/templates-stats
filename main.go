@@ -131,11 +131,8 @@ func printTemplateStats() {
 		} else {
 			firstItem = templateRelativePath[:strings.IndexAny(templateRelativePath, "/\\")]
 		}
-		if _, ok := directoryMap[firstItem]; ok {
-			directoryMap[firstItem]++
-		} else {
-			directoryMap[firstItem] = 1
-		}
+
+		directoryMap[firstItem]++
 
 		f, err := os.Open(template)
 		if err != nil {
