@@ -27,6 +27,9 @@ jobs:
       - name: Test
         run: go test ./...
         working-directory: .
+
+      - name: install nuclei and nuclei templates
+        run: go run -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
         
       - name: Race Condition Tests
         run: go run -race .
