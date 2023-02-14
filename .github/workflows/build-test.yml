@@ -30,6 +30,8 @@ jobs:
 
       - name: install nuclei and nuclei templates
         run: go run -v github.com/projectdiscovery/nuclei/v2/cmd/nuclei@latest
+        env:
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
         
       - name: Race Condition Tests
         run: go run -race .
