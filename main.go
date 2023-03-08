@@ -336,7 +336,14 @@ func printTemplateAdditions(additionFile string) error {
 	for scanner.Scan() {
 		text := scanner.Text()
 
-		template, err := os.Open(filepath.Join(*templateDirectory, text))
+		templatePath := filepath.Join(*templateDirectory, text)
+
+		if !stringsutil.EqualFoldAny(filepath.Ext(templatePath), ".yaml") {
+			log.Printf("ignoring %s\n", templatePath)
+			continue
+		}
+
+		template, err := os.Open(templatePath)
 		if err != nil {
 			log.Printf("Could not open %s: %s\n", text, err)
 			continue
