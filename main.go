@@ -7,15 +7,16 @@ import (
 	"io"
 	"log"
 	"os"
-	"path"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/pkg/errors"
-	"github.com/projectdiscovery/nuclei/v2/pkg/catalog"
+	"github.com/projectdiscovery/nuclei/v2/pkg/catalog/disk"
 	"github.com/projectdiscovery/nuclei/v2/pkg/types"
+	stringsutil "github.com/projectdiscovery/utils/strings"
 	"gopkg.in/yaml.v2"
 )
 
@@ -98,7 +99,7 @@ func main() {
 		if err != nil {
 			log.Fatalf("%s\n", err)
 		}
-		*templateDirectory = path.Join(homedir, "nuclei-templates")
+		*templateDirectory = filepath.Join(homedir, "nuclei-templates")
 	}
 	if *ta != "" {
 		if err := printTemplateAdditions(*ta); err != nil {
@@ -110,8 +111,11 @@ func main() {
 }
 
 func printTemplateStats() {
-	catalogClient := catalog.New(*templateDirectory)
-	includedTemplates := catalogClient.GetTemplatesPath([]string{*templateDirectory})
+	catalogClient := disk.NewCatalog(*templateDirectory)
+	includedTemplates, err := catalogClient.GetTemplatePath(*templateDirectory)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	tagMap := make(map[string]int)
 	authorMap := make(map[string]int)
@@ -119,20 +123,16 @@ func printTemplateStats() {
 	directoryMap := make(map[string]int)
 	typesMap := make(map[string]int)
 	for _, template := range includedTemplates {
-		templateRelativePath := strings.TrimPrefix(strings.TrimPrefix(template, *templateDirectory), "/")
+		templateRelativePath := stringsutil.TrimPrefixAny(template, *templateDirectory, "/", "\\")
 
 		var firstItem string
-		if !strings.Contains(templateRelativePath, "/") {
+		if !stringsutil.ContainsAny(templateRelativePath, "/", "\\") {
 			firstItem = templateRelativePath
 		} else {
-			firstItem = templateRelativePath[:strings.Index(templateRelativePath, "/")]
+			firstItem = templateRelativePath[:strings.IndexAny(templateRelativePath, "/\\")]
 		}
-		count, ok := directoryMap[firstItem]
-		if !ok {
-			directoryMap[firstItem] = 1
-		} else {
-			directoryMap[firstItem] = count + 1
-		}
+
+		directoryMap[firstItem]++
 
 		f, err := os.Open(template)
 		if err != nil {
@@ -336,7 +336,14 @@ func printTemplateAdditions(additionFile string) error {
 	for scanner.Scan() {
 		text := scanner.Text()
 
-		template, err := os.Open(path.Join(*templateDirectory, text))
+		templatePath := filepath.Join(*templateDirectory, text)
+
+		if !stringsutil.EqualFoldAny(filepath.Ext(templatePath), ".yaml") {
+			log.Printf("ignoring %s\n", templatePath)
+			continue
+		}
+
+		template, err := os.Open(templatePath)
 		if err != nil {
 			log.Printf("Could not open %s: %s\n", text, err)
 			continue
@@ -363,7 +370,7 @@ func printTemplateAdditions(additionFile string) error {
 		}
 		authorStr := types.ToString(author)
 
-		output.WriteString("- " + text + " by " + explodeAuthorsAndJoin(authorStr) + "\n")
+		_, _ = output.WriteString("- " + text + " by " + explodeAuthorsAndJoin(authorStr) + "\n")
 	}
 	return nil
 }
