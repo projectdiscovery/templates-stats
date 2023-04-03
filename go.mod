@@ -6,7 +6,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/nuclei/v2 v2.9.0
-	github.com/projectdiscovery/utils v0.0.18
+	github.com/projectdiscovery/utils v0.0.19
 	gopkg.in/yaml.v2 v2.4.0
 )
 
