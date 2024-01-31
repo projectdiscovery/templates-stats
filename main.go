@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -60,6 +61,7 @@ var (
 	severityFilter    = flag.Bool("severity", false, "Show Severity Data")
 	typesFilter       = flag.Bool("types", false, "Show Types Data")
 	verbose           = flag.Bool("v", false, "Use verbose mode")
+	listCvesInReverse = flag.Bool("lcr", false, "List CVEs in reverse order")
 	ta                = flag.String("ta", "", "Template Addition file")
 	outputFile        = flag.String("output", "", "File to write template addition author output to")
 	jsonOutput        = flag.Bool("json", false, "Show output in json format")
@@ -90,6 +92,18 @@ func (o *Output) getMaxItemCount() int {
 	}
 	return max
 }
+
+type CveItem struct {
+	CveID  string `json:"cve_id"`
+	Name   string `json:"name"`
+	Author string `json:"author"`
+}
+
+type CveList []CveItem
+
+func (c CveList) Len() int           { return len(c) }
+func (c CveList) Swap(i, j int)      { c[i], c[j] = c[j], c[i] }
+func (c CveList) Less(i, j int) bool { return c[i].CveID > c[j].CveID }
 
 func main() {
 	flag.Parse()
@@ -122,6 +136,7 @@ func printTemplateStats() {
 	severityMap := make(map[string]int)
 	directoryMap := make(map[string]int)
 	typesMap := make(map[string]int)
+	var cveList CveList
 	for _, template := range includedTemplates {
 		templateRelativePath := stringsutil.TrimPrefixAny(template, *templateDirectory, "/", "\\")
 
@@ -133,6 +148,13 @@ func printTemplateStats() {
 		}
 
 		directoryMap[firstItem]++
+
+		if !stringsutil.EqualFoldAny(filepath.Ext(template), ".yaml") {
+			if *verbose {
+				fmt.Printf("[ignored] %s\n", template)
+			}
+			continue
+		}
 
 		f, err := os.Open(template)
 		if err != nil {
@@ -152,6 +174,18 @@ func printTemplateStats() {
 			continue
 		}
 		infoMap := info.(map[interface{}]interface{})
+
+		if *listCvesInReverse {
+			id := data["id"]
+			if id == nil || !strings.HasPrefix(fmt.Sprintf("%v", id), "CVE-") {
+				continue
+			}
+			name := infoMap["name"]
+			author := infoMap["author"]
+			cveList = append(cveList, CveItem{CveID: fmt.Sprintf("%v", id), Name: fmt.Sprintf("%v", name), Author: fmt.Sprintf("%v", author)})
+			continue
+		}
+
 		tags := infoMap["tags"]
 		if tags == nil {
 			if *verbose {
@@ -237,6 +271,26 @@ func printTemplateStats() {
 				typesMap["file"] = count + 1
 			}
 		}
+	}
+
+	if len(cveList) > 0 {
+		sort.Sort(cveList)
+		if *count > 0 && len(cveList) >= *count {
+			cveList = cveList[:*count]
+		}
+
+		for _, cve := range cveList {
+			authors := strings.Split(cve.Author, ",")
+			a := ""
+			for i, author := range authors {
+				a += "@" + author
+				if i+1 != len(authors) {
+					a += ", "
+				}
+			}
+			fmt.Printf("%s [%s] by %s\n", cve.Name, cve.CveID, a)
+		}
+		os.Exit(0)
 	}
 
 	output := &Output{}
