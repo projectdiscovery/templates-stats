@@ -1,12 +1,12 @@
 module github.com/projectdiscovery/templates-stats
 
-go 1.19
+go 1.21
 
 require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/nuclei/v2 v2.9.9
-	github.com/projectdiscovery/utils v0.0.41-0.20230705082547-236cfa9298ab
+	github.com/projectdiscovery/utils v0.0.44
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -21,11 +21,11 @@ require (
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/charmbracelet/glamour v0.6.0 // indirect
-	github.com/cheggaaa/pb/v3 v3.1.2 // indirect
+	github.com/cheggaaa/pb/v3 v3.1.4 // indirect
 	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08 // indirect
 	github.com/dlclark/regexp2 v1.8.1 // indirect
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/fatih/color v1.14.1 // indirect
+	github.com/fatih/color v1.15.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect

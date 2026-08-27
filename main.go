@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -16,6 +17,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/projectdiscovery/nuclei/v2/pkg/catalog/disk"
 	"github.com/projectdiscovery/nuclei/v2/pkg/types"
+	sliceutil "github.com/projectdiscovery/utils/slice"
 	stringsutil "github.com/projectdiscovery/utils/strings"
 	"gopkg.in/yaml.v2"
 )
@@ -60,6 +62,8 @@ var (
 	severityFilter    = flag.Bool("severity", false, "Show Severity Data")
 	typesFilter       = flag.Bool("types", false, "Show Types Data")
 	verbose           = flag.Bool("v", false, "Use verbose mode")
+	listCvesInReverse = flag.Bool("lcr", false, "List CVEs in reverse order")
+	includeFields     = flag.String("fields", "", "Include fields in output. comma separated: authors,severity")
 	ta                = flag.String("ta", "", "Template Addition file")
 	outputFile        = flag.String("output", "", "File to write template addition author output to")
 	jsonOutput        = flag.Bool("json", false, "Show output in json format")
@@ -89,6 +93,51 @@ func (o *Output) getMaxItemCount() int {
 		max = newMax
 	}
 	return max
+}
+
+type NonCveItem struct {
+	Id       string `json:"id"`
+	Name     string `json:"name"`
+	Author   string `json:"author"`
+	Severity string `json:"severity"`
+}
+
+type NonCveList []NonCveItem
+
+type CveItem struct {
+	CveID    string `json:"cve_id"`
+	Name     string `json:"name"`
+	Author   string `json:"author"`
+	Severity string `json:"severity"`
+}
+
+type CveList []CveItem
+
+func (c CveList) Len() int      { return len(c) }
+func (c CveList) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
+func (c CveList) Less(i, j int) bool {
+	first := strings.Split(c[i].CveID, "-")
+	second := strings.Split(c[j].CveID, "-")
+	if len(first) < 1 || len(second) < 1 && len(first) != len(second) {
+		return c[i].CveID > c[j].CveID
+	}
+	var err1, err2, err3, err4 error
+	var firstYearPart, firstNumPart, secondYearPart, secondNumPart int
+	firstYearPart, err1 = strconv.Atoi(first[1])
+	firstNumPart, err2 = strconv.Atoi(first[2])
+	secondYearPart, err3 = strconv.Atoi(second[1])
+	secondNumPart, err4 = strconv.Atoi(second[2])
+	if err1 != nil || err2 != nil || err3 != nil || err4 != nil {
+		return c[i].CveID > c[j].CveID
+	}
+	if firstYearPart > secondYearPart {
+		return true
+	} else if firstYearPart == secondYearPart {
+		if firstNumPart > secondNumPart {
+			return true
+		}
+	}
+	return false
 }
 
 func main() {
@@ -122,6 +171,8 @@ func printTemplateStats() {
 	severityMap := make(map[string]int)
 	directoryMap := make(map[string]int)
 	typesMap := make(map[string]int)
+	var cveList CveList
+	var nonCveList NonCveList
 	for _, template := range includedTemplates {
 		templateRelativePath := stringsutil.TrimPrefixAny(template, *templateDirectory, "/", "\\")
 
@@ -133,6 +184,13 @@ func printTemplateStats() {
 		}
 
 		directoryMap[firstItem]++
+
+		if !stringsutil.EqualFoldAny(filepath.Ext(template), ".yaml") {
+			if *verbose {
+				fmt.Printf("[ignored] %s\n", template)
+			}
+			continue
+		}
 
 		f, err := os.Open(template)
 		if err != nil {
@@ -146,12 +204,28 @@ func printTemplateStats() {
 			continue
 		}
 		f.Close()
-
+		id, ok := data["id"]
+		if !ok {
+			continue
+		}
 		info := data["info"]
 		if info == nil {
 			continue
 		}
 		infoMap := info.(map[interface{}]interface{})
+
+		if *listCvesInReverse {
+			name := infoMap["name"]
+			author := infoMap["author"]
+			severity := infoMap["severity"]
+			if strings.HasPrefix(fmt.Sprintf("%v", id), "CVE-") {
+				cveList = append(cveList, CveItem{CveID: fmt.Sprintf("%v", id), Name: fmt.Sprintf("%v", name), Author: fmt.Sprintf("%v", author), Severity: fmt.Sprintf("%v", severity)})
+			} else {
+				nonCveList = append(nonCveList, NonCveItem{Id: fmt.Sprintf("%v", id), Name: fmt.Sprintf("%v", name), Author: fmt.Sprintf("%v", author), Severity: fmt.Sprintf("%v", severity)})
+			}
+			continue
+		}
+
 		tags := infoMap["tags"]
 		if tags == nil {
 			if *verbose {
@@ -239,6 +313,38 @@ func printTemplateStats() {
 		}
 	}
 
+	var resultWriter io.Writer
+	if *outputFile != "" {
+		output, err := os.Create(*outputFile)
+		if err != nil {
+			log.Fatalf("Could not create output file: %s\n", err)
+		}
+		resultWriter = output
+	} else {
+		resultWriter = os.Stdout
+	}
+
+	if len(cveList) > 0 || len(nonCveList) > 0 {
+		sort.Sort(cveList)
+		hasTopFilter := *count > 0
+		if hasTopFilter && len(cveList) > *count {
+			cveList = cveList[:*count]
+		}
+		fields := strings.Split(*includeFields, ",")
+		fields = sliceutil.Dedupe(fields)
+		for _, cve := range cveList {
+			_, _ = resultWriter.Write([]byte(formatCveItem(cve, fields)))
+		}
+		*count = *count - len(cveList)
+		if hasTopFilter && *count >= 0 {
+			nonCveList = nonCveList[:*count]
+		}
+		for _, nc := range nonCveList {
+			_, _ = resultWriter.Write([]byte(formatNonCveItem(nc, fields)))
+		}
+		os.Exit(0)
+	}
+
 	output := &Output{}
 	if *tagsFilter || *authorFilter || *directoryFilter || *typesFilter || *severityFilter {
 		// we have a filter. only run the asked one.
@@ -263,16 +369,6 @@ func printTemplateStats() {
 		output.Directory = newPairListFromMap(directoryMap, *count)
 		output.Types = newPairListFromMap(typesMap, *count)
 		output.Severity = newPairListFromMap(severityMap, *count)
-	}
-	var resultWriter io.Writer
-	if *outputFile != "" {
-		output, err := os.Create(*outputFile)
-		if err != nil {
-			log.Fatalf("Could not create output file: %s\n", err)
-		}
-		resultWriter = output
-	} else {
-		resultWriter = os.Stdout
 	}
 
 	if *jsonOutput {
@@ -332,6 +428,8 @@ func printTemplateAdditions(additionFile string) error {
 	}
 	defer output.Close()
 
+	var cveList CveList
+	var nonCveList NonCveList
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
 		text := scanner.Text()
@@ -357,6 +455,10 @@ func printTemplateAdditions(additionFile string) error {
 		}
 		template.Close()
 
+		id, ok := data["id"]
+		if !ok {
+			continue
+		}
 		info, ok := data["info"]
 		if !ok {
 			log.Printf("no info found for template %s\n", text)
@@ -370,7 +472,39 @@ func printTemplateAdditions(additionFile string) error {
 		}
 		authorStr := types.ToString(author)
 
+		if *listCvesInReverse {
+			name := infoMap["name"]
+			author := infoMap["author"]
+			severity := infoMap["severity"]
+			if strings.HasPrefix(fmt.Sprintf("%v", id), "CVE-") {
+				cveList = append(cveList, CveItem{CveID: fmt.Sprintf("%v", id), Name: fmt.Sprintf("%v", name), Author: fmt.Sprintf("%v", author), Severity: fmt.Sprintf("%v", severity)})
+			} else {
+				nonCveList = append(nonCveList, NonCveItem{Id: fmt.Sprintf("%v", id), Name: fmt.Sprintf("%v", name), Author: fmt.Sprintf("%v", author), Severity: fmt.Sprintf("%v", severity)})
+			}
+			continue
+		}
 		_, _ = output.WriteString("- " + text + " by " + explodeAuthorsAndJoin(authorStr) + "\n")
+	}
+
+	if len(cveList) > 0 {
+		sort.Sort(cveList)
+		hasTopFilter := *count > 0
+		if hasTopFilter && len(cveList) > *count {
+			cveList = cveList[:*count]
+		}
+		fields := strings.Split(*includeFields, ",")
+		fields = sliceutil.Dedupe(fields)
+		for _, cve := range cveList {
+			_, _ = output.WriteString(formatCveItem(cve, fields))
+		}
+		*count = *count - len(cveList)
+		if hasTopFilter && *count >= 0 {
+			nonCveList = nonCveList[:*count]
+		}
+		for _, nc := range nonCveList {
+			_, _ = output.WriteString(formatNonCveItem(nc, fields))
+		}
+		os.Exit(0)
 	}
 	return nil
 }
@@ -405,4 +539,52 @@ func explodeCommaSeparatedField(field string) []string {
 		partValues = append(partValues, strings.ToLower(strings.TrimSpace(part)))
 	}
 	return partValues
+}
+
+func formatCveItem(cveItem CveItem, fields []string) string {
+	text := fmt.Sprintf("[%s] %s", cveItem.CveID, cveItem.Name)
+	if len(fields) == 0 {
+		return text + "\n"
+	}
+	for _, field := range fields {
+		switch field {
+		case "author":
+			authors := strings.Split(cveItem.Author, ",")
+			a := ""
+			for i, author := range authors {
+				a += "@" + author
+				if i+1 != len(authors) {
+					a += ", "
+				}
+			}
+			text = fmt.Sprintf("%s (%s)", text, a)
+		case "severity":
+			text = fmt.Sprintf("%s [%s]", text, cveItem.Severity)
+		}
+	}
+	return text + "\n"
+}
+
+func formatNonCveItem(nc NonCveItem, fields []string) string {
+	text := fmt.Sprintf("[%s] %s", nc.Id, nc.Name)
+	if len(fields) == 0 {
+		return text + "\n"
+	}
+	for _, field := range fields {
+		switch field {
+		case "author":
+			authors := strings.Split(nc.Author, ",")
+			a := ""
+			for i, author := range authors {
+				a += "@" + author
+				if i+1 != len(authors) {
+					a += ", "
+				}
+			}
+			text = fmt.Sprintf("%s (%s)", text, a)
+		case "severity":
+			text = fmt.Sprintf("%s [%s]", text, nc.Severity)
+		}
+	}
+	return text + "\n"
 }
