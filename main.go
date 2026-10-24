@@ -199,11 +199,11 @@ func printTemplateStats() {
 		}
 		data := make(map[string]interface{})
 		if err := yaml.NewDecoder(f).Decode(&data); err != nil {
-			f.Close()
+			_ = f.Close()
 			log.Printf("Could not parse %s: %s\n", template, err)
 			continue
 		}
-		f.Close()
+		_ = f.Close()
 		id, ok := data["id"]
 		if !ok {
 			continue
@@ -420,13 +420,13 @@ func printTemplateAdditions(additionFile string) error {
 	if err != nil {
 		return errors.Wrap(err, "could not open addition file")
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 
 	output, err := os.Create(*outputFile)
 	if err != nil {
 		return errors.Wrap(err, "could not open output file file")
 	}
-	defer output.Close()
+	defer func() { _ = output.Close() }()
 
 	var cveList CveList
 	var nonCveList NonCveList
@@ -449,11 +449,11 @@ func printTemplateAdditions(additionFile string) error {
 
 		data := make(map[string]interface{})
 		if err := yaml.NewDecoder(template).Decode(data); err != nil {
-			template.Close()
+			_ = template.Close()
 			log.Printf("Could not decode %s: %s\n", text, err)
 			continue
 		}
-		template.Close()
+		_ = template.Close()
 
 		id, ok := data["id"]
 		if !ok {
