@@ -14,6 +14,7 @@ import (
 	"strings"
 
 	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/renderer"
 	"github.com/pkg/errors"
 	"github.com/projectdiscovery/nuclei/v2/pkg/catalog/disk"
 	"github.com/projectdiscovery/nuclei/v2/pkg/types"
@@ -407,12 +408,10 @@ func renderMarkdown(output *Output, writer io.Writer) {
 		data[i][8] = tag.Key
 		data[i][9] = strconv.Itoa(tag.Value)
 	}
-	table := tablewriter.NewWriter(writer)
-	table.SetHeader([]string{"Tag", "Count", "Author", "Count", "Directory", "Count", "Severity", "Count", "Type", "Count"})
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
-	table.AppendBulk(data) // Add Bulk Data
-	table.Render()
+	table := tablewriter.NewTable(writer, tablewriter.WithRenderer(renderer.NewMarkdown()))
+	table.Header("Tag", "Count", "Author", "Count", "Directory", "Count", "Severity", "Count", "Type", "Count")
+	_ = table.Bulk(data)
+	_ = table.Render()
 }
 
 func printTemplateAdditions(additionFile string) error {
