@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/pkg/errors v0.9.1
-	github.com/projectdiscovery/nuclei/v2 v2.9.9
+	github.com/projectdiscovery/nuclei/v2 v2.9.15
 	github.com/projectdiscovery/utils v0.11.10
 	gopkg.in/yaml.v2 v2.4.0
 )
@@ -15,11 +15,13 @@ require (
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/Mzack9999/gcache v0.0.0-20230410081825-519e28eab057 // indirect
 	github.com/Mzack9999/go-http-digest-auth-client v0.6.1-0.20220414142836-eb8883508809 // indirect
+	github.com/PuerkitoBio/goquery v1.8.1 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/akrylysov/pogreb v0.10.1 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
 	github.com/alecthomas/jsonschema v0.0.0-20211022214203-8b29eab41725 // indirect
 	github.com/andybalholm/brotli v1.2.0 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
@@ -27,11 +29,14 @@ require (
 	github.com/charmbracelet/lipgloss v0.13.0 // indirect
 	github.com/charmbracelet/x/ansi v0.3.2 // indirect
 	github.com/cheggaaa/pb/v3 v3.1.4 // indirect
+	github.com/cloudflare/cfssl v1.6.4 // indirect
 	github.com/cnf/structhash v0.0.0-20201127153200-e1b16c1ebc08 // indirect
+	github.com/corpix/uarand v0.2.0 // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/djherbis/times v1.6.0 // indirect
 	github.com/dlclark/regexp2 v1.11.5 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
+	github.com/dsnet/compress v0.0.2-0.20230904184137-39efe44ab707 // indirect
 	github.com/ebitengine/purego v0.10.0 // indirect
 	github.com/fatih/color v1.15.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
@@ -41,10 +46,12 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.14.1 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/google/certificate-transparency-go v1.1.4 // indirect
 	github.com/google/go-github/v92 v92.0.0 // indirect
 	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/gorilla/css v1.0.1 // indirect
+	github.com/hbakhtiyor/strsim v0.0.0-20190107154042-4d2bbb273edf // indirect
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/compress v1.18.2 // indirect
@@ -65,14 +72,18 @@ require (
 	github.com/muesli/termenv v0.15.3-0.20240618155329-98d742f6907a // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/projectdiscovery/blackrock v0.0.2 // indirect
+	github.com/projectdiscovery/cdncheck v1.0.9 // indirect
 	github.com/projectdiscovery/fastdialer v0.5.26 // indirect
-	github.com/projectdiscovery/goflags v0.1.10 // indirect
+	github.com/projectdiscovery/goflags v0.1.20 // indirect
 	github.com/projectdiscovery/gologger v1.1.73 // indirect
 	github.com/projectdiscovery/hmap v0.0.102 // indirect
+	github.com/projectdiscovery/httpx v1.3.4 // indirect
 	github.com/projectdiscovery/machineid v0.0.0-20250715113114-c77eb3567582 // indirect
 	github.com/projectdiscovery/networkpolicy v0.1.54 // indirect
+	github.com/projectdiscovery/rawhttp v0.1.18 // indirect
 	github.com/projectdiscovery/retryabledns v1.0.116 // indirect
 	github.com/projectdiscovery/retryablehttp-go v1.3.31 // indirect
+	github.com/projectdiscovery/tlsx v1.1.4 // indirect
 	github.com/refraction-networking/utls v1.8.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.5.0 // indirect
@@ -90,6 +101,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/weppos/publicsuffix-go v0.50.4-0.20260918082853-3c3d7dc4a0cb // indirect
+	github.com/yl2chen/cidranger v1.0.2 // indirect
 	github.com/yuin/goldmark v1.7.4 // indirect
 	github.com/yuin/goldmark-emoji v1.0.3 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
