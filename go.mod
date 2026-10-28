@@ -6,7 +6,7 @@ require (
 	github.com/olekukonko/tablewriter v1.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/nuclei/v2 v2.9.9
-	github.com/projectdiscovery/utils v0.11.10
+	github.com/projectdiscovery/utils v0.11.11
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -50,7 +50,7 @@ require (
 	github.com/gorilla/css v1.0.1 // indirect
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/klauspost/compress v1.18.2 // indirect
+	github.com/klauspost/compress v1.18.7 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/logrusorgru/aurora v2.0.3+incompatible // indirect
 	github.com/logrusorgru/aurora/v4 v4.0.0 // indirect
