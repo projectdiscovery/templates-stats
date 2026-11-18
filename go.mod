@@ -6,7 +6,7 @@ require (
 	github.com/olekukonko/tablewriter v1.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/nuclei/v2 v2.9.9
-	github.com/projectdiscovery/utils v0.11.13
+	github.com/projectdiscovery/utils v0.11.14
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -14,7 +14,6 @@ require (
 	aead.dev/minisign v0.2.0 // indirect
 	github.com/Masterminds/semver/v3 v3.2.1 // indirect
 	github.com/Mzack9999/gcache v0.0.0-20230410081825-519e28eab057 // indirect
-	github.com/Mzack9999/go-http-digest-auth-client v0.6.1-0.20220414142836-eb8883508809 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/akrylysov/pogreb v0.10.1 // indirect
 	github.com/alecthomas/chroma/v2 v2.14.0 // indirect
@@ -71,14 +70,14 @@ require (
 	github.com/olekukonko/ll v0.1.6 // indirect
 	github.com/power-devops/perfstat v0.0.0-20240221224432-82ca36839d55 // indirect
 	github.com/projectdiscovery/blackrock v0.0.2 // indirect
-	github.com/projectdiscovery/fastdialer v0.5.26 // indirect
-	github.com/projectdiscovery/goflags v0.1.10 // indirect
-	github.com/projectdiscovery/gologger v1.1.73 // indirect
-	github.com/projectdiscovery/hmap v0.0.102 // indirect
+	github.com/projectdiscovery/fastdialer v0.6.1 // indirect
+	github.com/projectdiscovery/goflags v0.1.20 // indirect
+	github.com/projectdiscovery/gologger v1.1.75 // indirect
+	github.com/projectdiscovery/hmap v0.0.104 // indirect
 	github.com/projectdiscovery/machineid v0.0.0-20250715113114-c77eb3567582 // indirect
-	github.com/projectdiscovery/networkpolicy v0.1.54 // indirect
-	github.com/projectdiscovery/retryabledns v1.0.116 // indirect
-	github.com/projectdiscovery/retryablehttp-go v1.3.31 // indirect
+	github.com/projectdiscovery/networkpolicy v0.1.57 // indirect
+	github.com/projectdiscovery/retryabledns v1.0.118 // indirect
+	github.com/projectdiscovery/retryablehttp-go v1.3.33 // indirect
 	github.com/refraction-networking/utls v1.8.2 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/rs/xid v1.5.0 // indirect
@@ -109,7 +108,7 @@ require (
 	golang.org/x/net v0.60.0 // indirect
 	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.23.0 // indirect
-	golang.org/x/sys v0.48.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 	golang.org/x/term v0.46.0 // indirect
 	golang.org/x/text v0.42.0 // indirect
 	golang.org/x/tools v0.49.0 // indirect
