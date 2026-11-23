@@ -6,7 +6,7 @@ require (
 	github.com/olekukonko/tablewriter v1.1.5
 	github.com/pkg/errors v0.9.1
 	github.com/projectdiscovery/nuclei/v3 v3.11.2-0.20261119130221-2e587bc5e5ec
-	github.com/projectdiscovery/utils v0.11.14
+	github.com/projectdiscovery/utils v0.11.15
 	gopkg.in/yaml.v2 v2.4.0
 )
 
@@ -97,15 +97,15 @@ require (
 	github.com/projectdiscovery/cdncheck v1.4.0 // indirect
 	github.com/projectdiscovery/fastdialer v0.6.3 // indirect
 	github.com/projectdiscovery/goflags v0.2.1 // indirect
-	github.com/projectdiscovery/gologger v1.1.75 // indirect
-	github.com/projectdiscovery/hmap v0.0.104 // indirect
+	github.com/projectdiscovery/gologger v1.1.76 // indirect
+	github.com/projectdiscovery/hmap v0.0.105 // indirect
 	github.com/projectdiscovery/httpx v1.12.0 // indirect
 	github.com/projectdiscovery/machineid v0.0.0-20250715113114-c77eb3567582 // indirect
 	github.com/projectdiscovery/networkpolicy v0.1.58 // indirect
 	github.com/projectdiscovery/ratelimit v0.0.95 // indirect
 	github.com/projectdiscovery/rawhttp v0.3.1 // indirect
-	github.com/projectdiscovery/retryabledns v1.0.118 // indirect
-	github.com/projectdiscovery/retryablehttp-go v1.3.34 // indirect
+	github.com/projectdiscovery/retryabledns v1.0.119 // indirect
+	github.com/projectdiscovery/retryablehttp-go v1.3.35 // indirect
 	github.com/projectdiscovery/tlsx v1.4.3-0.20261020052910-acb80c2c7c75 // indirect
 	github.com/projectdiscovery/useragent v0.0.110 // indirect
 	github.com/refraction-networking/utls v1.8.2 // indirect
